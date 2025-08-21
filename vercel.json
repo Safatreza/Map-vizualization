@@ -22,18 +22,14 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/",
-      "dest": "/customer_map.html"
+      "source": "/",
+      "destination": "/customer_map.html"
     },
     {
-      "src": "/map",
-      "dest": "/customer_map.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/map",
+      "destination": "/customer_map.html"
     }
   ],
   "headers": [
