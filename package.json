@@ -1,0 +1,31 @@
+{
+  "name": "aboutwater-customer-map",
+  "version": "1.0.0",
+  "description": "Interactive customer map visualization for AboutWater GmbH",
+  "main": "customer_map.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Safatreza/Map-vizualization.git"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required for static site'",
+    "deploy": "vercel --prod",
+    "start": "vercel dev"
+  },
+  "keywords": [
+    "customer-map",
+    "leaflet",
+    "visualization",
+    "aboutwater",
+    "vercel"
+  ],
+  "author": "AboutWater GmbH",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

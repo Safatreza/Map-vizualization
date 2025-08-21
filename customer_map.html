@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AboutWater Customer Map</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            background: white;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .filter-group select, .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        #map {
+            height: calc(100vh - 140px);
+            width: 100%;
+        }
+        
+        .legend {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .legend h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .customer-popup {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .customer-popup h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+        
+        .customer-popup .info-row {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .customer-popup .label {
+            font-weight: 600;
+            color: #666;
+            min-width: 80px;
+        }
+        
+        .customer-popup .value {
+            color: #333;
+        }
+        
+        .customer-popup .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .customer-popup .status.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .customer-popup .status.inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .stats {
+                justify-content: center;
+            }
+            
+            .legend {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌍 AboutWater Customer Map</h1>
+        <p>Visualizing customer locations across Europe</p>
+    </div>
+    
+    <div class="controls">
+        <div class="filter-group">
+            <label for="statusFilter">Status:</label>
+            <select id="statusFilter">
+                <option value="all">All Customers</option>
+                <option value="active">Active Only</option>
+                <option value="inactive">Inactive Only</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="countryFilter">Country:</label>
+            <select id="countryFilter">
+                <option value="all">All Countries</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="searchInput">Search:</label>
+            <input type="text" id="searchInput" placeholder="Customer name or number...">
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCustomers">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="activeCustomers">0</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="inactiveCustomers">0</div>
+                <div class="stat-label">Inactive</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="legend">
+        <h4>Legend</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #28a745;"></div>
+            <span>Active Customer</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #dc3545;"></div>
+            <span>Inactive Customer</span>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Loading customer data...</div>
+    </div>
+    
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Global variables
+        let map;
+        let customerMarkers = [];
+        let allCustomers = [];
+        let filteredCustomers = [];
+        
+        // Initialize the map
+        function initMap() {
+            // Create map centered on Europe
+            map = L.map('map').setView([50.0, 10.0], 5);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Add a scale bar
+            L.control.scale().addTo(map);
+        }
+        
+        // Load customer data
+        async function loadCustomerData() {
+            try {
+                const response = await fetch('customers_for_map.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load customer data');
+                }
+                
+                const data = await response.json();
+                allCustomers = data.customers || [];
+                filteredCustomers = [...allCustomers];
+                
+                // Update statistics
+                updateStatistics();
+                
+                // Populate country filter
+                populateCountryFilter();
+                
+                // Display customers on map
+                displayCustomers();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error loading customer data:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #dc3545;">
+                        <strong>Error loading data:</strong><br>
+                        ${error.message}<br><br>
+                        Please run the Python script first to generate the customer data.
+                    </div>
+                `;
+            }
+        }
+        
+        // Update statistics display
+        function updateStatistics() {
+            const total = allCustomers.length;
+            const active = allCustomers.filter(c => c.is_active).length;
+            const inactive = total - active;
+            
+            document.getElementById('totalCustomers').textContent = total;
+            document.getElementById('activeCustomers').textContent = active;
+            document.getElementById('inactiveCustomers').textContent = inactive;
+        }
+        
+        // Populate country filter dropdown
+        function populateCountryFilter() {
+            const countries = [...new Set(allCustomers.map(c => c.country).filter(c => c))].sort();
+            const countryFilter = document.getElementById('countryFilter');
+            
+            countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countryFilter.appendChild(option);
+            });
+        }
+        
+        // Display customers on the map
+        function displayCustomers() {
+            // Clear existing markers
+            customerMarkers.forEach(marker => map.removeLayer(marker));
+            customerMarkers = [];
+            
+            // Create markers for each customer
+            filteredCustomers.forEach(customer => {
+                const marker = createCustomerMarker(customer);
+                customerMarkers.push(marker);
+                marker.addTo(map);
+            });
+            
+            // Fit map to show all markers
+            if (customerMarkers.length > 0) {
+                const group = new L.featureGroup(customerMarkers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+        
+        // Create a marker for a customer
+        function createCustomerMarker(customer) {
+            // Choose color based on active status
+            const color = customer.is_active ? '#28a745' : '#dc3545';
+            
+            // Create custom icon with customer name
+            const icon = L.divIcon({
+                className: 'customer-marker',
+                html: `<div style="
+                    background-color: ${color};
+                    color: white;
+                    border: 2px solid white;
+                    border-radius: 50%;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 12px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                    cursor: pointer;
+                " title="${customer.customer_identifier}">${customer.customer_identifier.charAt(0).toUpperCase()}</div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+            
+            // Create marker
+            const marker = L.marker([customer.latitude, customer.longitude], { icon: icon });
+            
+            // Create popup content
+            const popupContent = createPopupContent(customer);
+            marker.bindPopup(popupContent);
+            
+            // Add tooltip with customer name
+            marker.bindTooltip(customer.customer_identifier, {
+                permanent: false,
+                direction: 'top',
+                offset: [0, -40]
+            });
+            
+            return marker;
+        }
+        
+        // Create popup content for a customer
+        function createPopupContent(customer) {
+            const statusClass = customer.is_active ? 'active' : 'inactive';
+            const statusText = customer.is_active ? 'Active' : 'Inactive';
+            
+            return `
+                <div class="customer-popup">
+                    <h3>${customer.customer_identifier}</h3>
+                    <div class="info-row">
+                        <span class="label">Status:</span>
+                        <span class="status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Customer #:</span>
+                        <span class="value">${customer.customer_number}</span>
+                    </div>
+                    ${customer.street ? `<div class="info-row">
+                        <span class="label">Address:</span>
+                        <span class="value">${customer.street}</span>
+                    </div>` : ''}
+                    ${customer.postal_code ? `<div class="info-row">
+                        <span class="label">Postal Code:</span>
+                        <span class="value">${customer.postal_code}</span>
+                    </div>` : ''}
+                    ${customer.city ? `<div class="info-row">
+                        <span class="label">City:</span>
+                        <span class="value">${customer.city}</span>
+                    </div>` : ''}
+                    ${customer.country ? `<div class="info-row">
+                        <span class="label">Country:</span>
+                        <span class="value">${customer.country}</span>
+                    </div>` : ''}
+                </div>
+            `;
+        }
+        
+        // Filter customers based on current filters
+        function filterCustomers() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const countryFilter = document.getElementById('countryFilter').value;
+            const searchFilter = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredCustomers = allCustomers.filter(customer => {
+                // Status filter
+                if (statusFilter !== 'all') {
+                    const isActive = statusFilter === 'active';
+                    if (customer.is_active !== isActive) return false;
+                }
+                
+                // Country filter
+                if (countryFilter !== 'all' && customer.country !== countryFilter) {
+                    return false;
+                }
+                
+                // Search filter
+                if (searchFilter) {
+                    const searchText = `${customer.customer_identifier} ${customer.customer_number} ${customer.city} ${customer.country}`.toLowerCase();
+                    if (!searchText.includes(searchFilter)) return false;
+                }
+                
+                return true;
+            });
+            
+            // Update display
+            displayCustomers();
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize map
+            initMap();
+            
+            // Load customer data
+            loadCustomerData();
+            
+            // Add event listeners for filters
+            document.getElementById('statusFilter').addEventListener('change', filterCustomers);
+            document.getElementById('countryFilter').addEventListener('change', filterCustomers);
+            document.getElementById('searchInput').addEventListener('input', filterCustomers);
+        });
+    </script>
+</body>
+</html>
