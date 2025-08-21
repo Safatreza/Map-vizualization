@@ -423,7 +423,7 @@ def create_clean_csv_summary(df, filename='customer_summary_clean.csv'):
 
 def main():
     """Main function to process all customer data with improved quality"""
-    print("=== AboutWater Customer Data Processing (Improved) ===")
+    print("=== aboutwater Customer Data Processing (Improved) ===")
     print()
     
     # Clean and standardize the data

@@ -170,7 +170,7 @@ def create_csv_summary(df, filename='customer_summary.csv'):
 
 def main():
     """Main function to process all customer data"""
-    print("=== AboutWater Customer Data Processing ===")
+    print("=== aboutwater Customer Data Processing ===")
     print()
     
     # Clean and standardize the data

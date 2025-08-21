@@ -1,7 +1,7 @@
 {
   "name": "aboutwater-customer-map",
   "version": "1.0.0",
-  "description": "Interactive customer map visualization for AboutWater GmbH",
+          "description": "Interactive customer map visualization for aboutwater GmbH",
   "main": "customer_map.html",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "aboutwater",
     "vercel"
   ],
-  "author": "AboutWater GmbH",
+          "author": "aboutwater GmbH",
   "license": "MIT",
   "devDependencies": {
     "vercel": "^32.0.0"

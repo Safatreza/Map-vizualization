@@ -1,11 +1,11 @@
-# 🌍 AboutWater Customer Map
+# 🌍 aboutwater Customer Map
 
 [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
 [![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-> Interactive customer map visualization for AboutWater GmbH - Deploy to Vercel with one click!
+> Interactive customer map visualization for aboutwater GmbH - Deploy to Vercel with one click!
 
 ## 🚀 Live Demo
 
@@ -238,7 +238,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Leaflet.js** - Open-source mapping library
 - **OpenStreetMap** - Free map tiles
 - **Vercel** - Amazing hosting platform
-- **AboutWater GmbH** - For the opportunity to build this tool
+        - **aboutwater GmbH** - For the opportunity to build this tool
 
 ---
 
@@ -248,7 +248,7 @@ If this project helps you or your team, please give it a ⭐ star on GitHub!
 
 ---
 
-**Built with ❤️ for AboutWater GmbH**
+**Built with ❤️ for aboutwater GmbH**
 
 **[Deploy to Vercel Now](https://vercel.com/new/clone?repository-url=https://github.com/Safatreza/Map-vizualization)**
 # Map-vizualization
