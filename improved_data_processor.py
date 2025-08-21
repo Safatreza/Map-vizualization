@@ -138,13 +138,19 @@ def create_full_address(row):
     
     return ', '.join(parts) if parts else ''
 
-def create_improved_geocoded_data(df, sample_size=300):
+def create_improved_geocoded_data(df, sample_size=None):
     """Create improved geocoded data with better coordinate distribution"""
     
-    print(f"Creating improved geocoded data for {sample_size} customers...")
+    if sample_size is None:
+        sample_size = len(df)
     
-    # Sample customers with good address data
-    sample_df = df.sample(n=min(sample_size, len(df)), random_state=42)
+    print(f"Creating improved geocoded data for {sample_size} customers (including all German cities)...")
+    
+    # Use all customers or sample if specified
+    if sample_size >= len(df):
+        sample_df = df
+    else:
+        sample_df = df.sample(n=min(sample_size, len(df)), random_state=42)
     
     # Create mock coordinates for demonstration
     # In a real scenario, you would use a geocoding service
@@ -192,15 +198,164 @@ def create_improved_geocoded_data(df, sample_size=300):
         'SG': {'lat': 1.3521, 'lng': 103.8198, 'spread': 0.2}
     }
     
+    # Major German cities with specific coordinates for better representation
+    german_cities = {
+        'München': {'lat': 48.1351, 'lng': 11.5820, 'spread': 0.3},
+        'Munich': {'lat': 48.1351, 'lng': 11.5820, 'spread': 0.3},
+        'Berlin': {'lat': 52.5200, 'lng': 13.4050, 'spread': 0.3},
+        'Hamburg': {'lat': 53.5511, 'lng': 9.9937, 'spread': 0.3},
+        'Köln': {'lat': 50.9375, 'lng': 6.9603, 'spread': 0.3},
+        'Cologne': {'lat': 50.9375, 'lng': 6.9603, 'spread': 0.3},
+        'Frankfurt': {'lat': 50.1109, 'lng': 8.6821, 'spread': 0.3},
+        'Stuttgart': {'lat': 48.7758, 'lng': 9.1829, 'spread': 0.3},
+        'Düsseldorf': {'lat': 51.2277, 'lng': 6.7735, 'spread': 0.3},
+        'Dortmund': {'lat': 51.5136, 'lng': 7.4653, 'spread': 0.3},
+        'Essen': {'lat': 51.4556, 'lng': 7.0116, 'spread': 0.3},
+        'Leipzig': {'lat': 51.3397, 'lng': 12.3731, 'spread': 0.3},
+        'Bremen': {'lat': 53.0793, 'lng': 8.8017, 'spread': 0.3},
+        'Dresden': {'lat': 51.0504, 'lng': 13.7373, 'spread': 0.3},
+        'Hannover': {'lat': 52.3759, 'lng': 9.7320, 'spread': 0.3},
+        'Nürnberg': {'lat': 49.4521, 'lng': 11.0767, 'spread': 0.3},
+        'Nuremberg': {'lat': 49.4521, 'lng': 11.0767, 'spread': 0.3},
+        'Duisburg': {'lat': 51.4344, 'lng': 6.7623, 'spread': 0.3},
+        'Bochum': {'lat': 51.4818, 'lng': 7.2162, 'spread': 0.3},
+        'Wuppertal': {'lat': 51.2562, 'lng': 7.1508, 'spread': 0.3},
+        'Bielefeld': {'lat': 52.0302, 'lng': 8.5325, 'spread': 0.3},
+        'Bonn': {'lat': 50.7374, 'lng': 7.0982, 'spread': 0.3},
+        'Mannheim': {'lat': 49.4875, 'lng': 8.4660, 'spread': 0.3},
+        'Karlsruhe': {'lat': 49.0069, 'lng': 8.4037, 'spread': 0.3},
+        'Wiesbaden': {'lat': 50.0782, 'lng': 8.2397, 'spread': 0.3},
+        'Münster': {'lat': 51.9607, 'lng': 7.6261, 'spread': 0.3},
+        'Gelsenkirchen': {'lat': 51.5177, 'lng': 7.0857, 'spread': 0.3},
+        'Aachen': {'lat': 50.7753, 'lng': 6.0839, 'spread': 0.3},
+        'Braunschweig': {'lat': 52.2689, 'lng': 10.5267, 'spread': 0.3},
+        'Chemnitz': {'lat': 50.8278, 'lng': 12.9249, 'spread': 0.3},
+        'Kiel': {'lat': 54.3233, 'lng': 10.1228, 'spread': 0.3},
+        'Halle': {'lat': 51.4964, 'lng': 11.9688, 'spread': 0.3},
+        'Magdeburg': {'lat': 52.1205, 'lng': 11.6276, 'spread': 0.3},
+        'Freiburg': {'lat': 47.9990, 'lng': 7.8421, 'spread': 0.3},
+        'Krefeld': {'lat': 51.3392, 'lng': 6.5861, 'spread': 0.3},
+        'Lübeck': {'lat': 53.8654, 'lng': 10.6866, 'spread': 0.3},
+        'Oberhausen': {'lat': 51.4706, 'lng': 6.8514, 'spread': 0.3},
+        'Erfurt': {'lat': 50.9848, 'lng': 11.0299, 'spread': 0.3},
+        'Mainz': {'lat': 49.9929, 'lng': 8.2473, 'spread': 0.3},
+        'Rostock': {'lat': 54.0924, 'lng': 12.0991, 'spread': 0.3},
+        'Kassel': {'lat': 51.3127, 'lng': 9.4797, 'spread': 0.3},
+        'Potsdam': {'lat': 52.3906, 'lng': 13.0645, 'spread': 0.3},
+        'Hagen': {'lat': 51.3671, 'lng': 7.4634, 'spread': 0.3},
+        'Saarbrücken': {'lat': 49.2374, 'lng': 6.9816, 'spread': 0.3},
+        'Mülheim': {'lat': 51.4275, 'lng': 6.8827, 'spread': 0.3},
+        'Ludwigshafen': {'lat': 49.4744, 'lng': 8.4402, 'spread': 0.3},
+        'Leverkusen': {'lat': 51.0459, 'lng': 6.9853, 'spread': 0.3},
+        'Oldenburg': {'lat': 53.1434, 'lng': 8.2146, 'spread': 0.3},
+        'Osnabrück': {'lat': 52.2799, 'lng': 8.0472, 'spread': 0.3},
+        'Solingen': {'lat': 51.1734, 'lng': 7.0845, 'spread': 0.3},
+        'Heidelberg': {'lat': 49.3988, 'lng': 8.6724, 'spread': 0.3},
+        'Herne': {'lat': 51.5416, 'lng': 7.2208, 'spread': 0.3},
+        'Neuss': {'lat': 51.2042, 'lng': 6.6879, 'spread': 0.3},
+        'Darmstadt': {'lat': 49.8728, 'lng': 8.6512, 'spread': 0.3},
+        'Paderborn': {'lat': 51.7187, 'lng': 8.7575, 'spread': 0.3},
+        'Regensburg': {'lat': 49.0134, 'lng': 12.1016, 'spread': 0.3},
+        'Ingolstadt': {'lat': 48.7665, 'lng': 11.4241, 'spread': 0.3},
+        'Würzburg': {'lat': 49.7913, 'lng': 9.9534, 'spread': 0.3},
+        'Fürth': {'lat': 49.4778, 'lng': 10.9887, 'spread': 0.3},
+        'Wolfsburg': {'lat': 52.4227, 'lng': 10.7865, 'spread': 0.3},
+        'Offenbach': {'lat': 50.1006, 'lng': 8.7665, 'spread': 0.3},
+        'Ulm': {'lat': 48.3984, 'lng': 9.9916, 'spread': 0.3},
+        'Heilbronn': {'lat': 49.1427, 'lng': 9.2185, 'spread': 0.3},
+        'Pforzheim': {'lat': 48.8926, 'lng': 8.6949, 'spread': 0.3},
+        'Göttingen': {'lat': 51.5413, 'lng': 9.9158, 'spread': 0.3},
+        'Bottrop': {'lat': 51.5235, 'lng': 6.9225, 'spread': 0.3},
+        'Trier': {'lat': 49.7499, 'lng': 6.6373, 'spread': 0.3},
+        'Recklinghausen': {'lat': 51.6138, 'lng': 7.1977, 'spread': 0.3},
+        'Reutlingen': {'lat': 48.4914, 'lng': 9.2045, 'spread': 0.3},
+        'Bremerhaven': {'lat': 53.5396, 'lng': 8.5809, 'spread': 0.3},
+        'Koblenz': {'lat': 50.3569, 'lng': 7.5940, 'spread': 0.3},
+        'Bergisch Gladbach': {'lat': 50.9856, 'lng': 7.1329, 'spread': 0.3},
+        'Jena': {'lat': 50.9279, 'lng': 11.5892, 'spread': 0.3},
+        'Remscheid': {'lat': 51.1784, 'lng': 7.1894, 'spread': 0.3},
+        'Erlangen': {'lat': 49.5897, 'lng': 11.0041, 'spread': 0.3},
+        'Moers': {'lat': 51.4514, 'lng': 6.6264, 'spread': 0.3},
+        'Siegen': {'lat': 50.8745, 'lng': 8.0243, 'spread': 0.3},
+        'Hildesheim': {'lat': 52.1508, 'lng': 9.9513, 'spread': 0.3},
+        'Salzgitter': {'lat': 52.1508, 'lng': 10.3333, 'spread': 0.3},
+        'Cottbus': {'lat': 51.7216, 'lng': 14.3344, 'spread': 0.3},
+        'Gera': {'lat': 50.8803, 'lng': 12.0826, 'spread': 0.3},
+        'Kaiserslautern': {'lat': 49.4431, 'lng': 7.7689, 'spread': 0.3},
+        'Schwerin': {'lat': 53.6355, 'lng': 11.4012, 'spread': 0.3},
+        'Gütersloh': {'lat': 51.9069, 'lng': 8.3785, 'spread': 0.3},
+        'Witten': {'lat': 51.4436, 'lng': 7.3305, 'spread': 0.3},
+        'Iserlohn': {'lat': 51.3754, 'lng': 7.7020, 'spread': 0.3},
+        'Ludwigsburg': {'lat': 48.8974, 'lng': 9.1916, 'spread': 0.3},
+        'Hanau': {'lat': 50.1348, 'lng': 8.9144, 'spread': 0.3},
+        'Esslingen': {'lat': 48.7424, 'lng': 9.3048, 'spread': 0.3},
+        'Zwickau': {'lat': 50.7186, 'lng': 12.4942, 'spread': 0.3},
+        'Düren': {'lat': 50.8008, 'lng': 6.4830, 'spread': 0.3},
+        'Ratingen': {'lat': 51.2972, 'lng': 6.8497, 'spread': 0.3},
+        'Tübingen': {'lat': 48.5206, 'lng': 9.0556, 'spread': 0.3},
+        'Villingen-Schwenningen': {'lat': 48.0582, 'lng': 8.4616, 'spread': 0.3},
+        'Königs Wusterhausen': {'lat': 52.3014, 'lng': 13.6330, 'spread': 0.3},
+        'Lünen': {'lat': 51.6164, 'lng': 7.5282, 'spread': 0.3},
+        'Marl': {'lat': 51.6567, 'lng': 7.0904, 'spread': 0.3},
+        'Velbert': {'lat': 51.3373, 'lng': 7.0419, 'spread': 0.3},
+        'Minden': {'lat': 52.2895, 'lng': 8.9145, 'spread': 0.3},
+        'Dessau-Roßlau': {'lat': 51.8364, 'lng': 12.2469, 'spread': 0.3},
+        'Viersen': {'lat': 51.2543, 'lng': 6.3944, 'spread': 0.3},
+        'Rheine': {'lat': 52.2799, 'lng': 7.4407, 'spread': 0.3},
+        'Lüdenscheid': {'lat': 51.2254, 'lng': 7.6273, 'spread': 0.3},
+        'Castrop-Rauxel': {'lat': 51.5561, 'lng': 7.3116, 'spread': 0.3},
+        'Gladbeck': {'lat': 51.5708, 'lng': 6.9854, 'spread': 0.3},
+        'Bocholt': {'lat': 51.8388, 'lng': 6.6153, 'spread': 0.3},
+        'Bamberg': {'lat': 49.8988, 'lng': 10.9027, 'spread': 0.3},
+        'Detmold': {'lat': 51.9334, 'lng': 8.8733, 'spread': 0.3},
+        'Arnsberg': {'lat': 51.3963, 'lng': 8.0641, 'spread': 0.3},
+        'Lüneburg': {'lat': 53.2504, 'lng': 10.4145, 'spread': 0.3},
+        'Bayreuth': {'lat': 49.9483, 'lng': 11.5783, 'spread': 0.3},
+        'Celle': {'lat': 52.6226, 'lng': 10.0805, 'spread': 0.3},
+        'Landshut': {'lat': 48.5378, 'lng': 12.1518, 'spread': 0.3},
+        'Aschaffenburg': {'lat': 49.9770, 'lng': 9.1521, 'spread': 0.3},
+        'Dinslaken': {'lat': 51.5667, 'lng': 6.7333, 'spread': 0.3},
+        'Aalen': {'lat': 48.8378, 'lng': 10.0933, 'spread': 0.3},
+        'Fulda': {'lat': 50.5598, 'lng': 9.6710, 'spread': 0.3},
+        'Lippstadt': {'lat': 51.6733, 'lng': 8.3447, 'spread': 0.3},
+        'Weimar': {'lat': 50.9795, 'lng': 11.3235, 'spread': 0.3},
+        'Dormagen': {'lat': 51.0963, 'lng': 6.8319, 'spread': 0.3},
+        'Neumünster': {'lat': 54.0744, 'lng': 9.9819, 'spread': 0.3},
+        'Sindelfingen': {'lat': 48.7136, 'lng': 8.9967, 'spread': 0.3},
+        'Rosenheim': {'lat': 47.8564, 'lng': 12.1291, 'spread': 0.3},
+        'Herten': {'lat': 51.6000, 'lng': 7.1333, 'spread': 0.3},
+        'Bergheim': {'lat': 50.9550, 'lng': 6.6390, 'spread': 0.3},
+        'Schwäbisch Gmünd': {'lat': 48.8014, 'lng': 9.7974, 'spread': 0.3},
+        'Friedrichshafen': {'lat': 47.6582, 'lng': 9.4758, 'spread': 0.3},
+        'Wesel': {'lat': 51.6583, 'lng': 6.6172, 'spread': 0.3},
+        'Kempten': {'lat': 47.7278, 'lng': 10.3137, 'spread': 0.3},
+        'Görlitz': {'lat': 51.1552, 'lng': 14.9885, 'spread': 0.3},
+        'Frankfurt (Oder)': {'lat': 52.3412, 'lng': 14.5500, 'spread': 0.3},
+        'Frankfurt Oder': {'lat': 52.3412, 'lng': 14.5500, 'spread': 0.3},
+        'Lübeck': {'lat': 53.8654, 'lng': 10.6866, 'spread': 0.3},
+        'Mönchengladbach': {'lat': 51.1805, 'lng': 6.4428, 'spread': 0.3},
+        'Moenchengladbach': {'lat': 51.1805, 'lng': 6.4428, 'spread': 0.3}
+    }
+    
     for idx, row in sample_df.iterrows():
-        # Get base coordinates for the country
+        # Get base coordinates for the country and city
         country = row['country'] if row['country'] else 'DE'
-        base_coords = country_coords.get(country, country_coords['DE'])
+        city = str(row['city']).strip() if pd.notna(row['city']) else ''
         
-        # Add random variation based on country spread
-        spread = base_coords['spread']
-        lat_variation = np.random.uniform(-spread/2, spread/2)
-        lng_variation = np.random.uniform(-spread/2, spread/2)
+        # Check if we have specific coordinates for this city
+        if city in german_cities:
+            base_coords = german_cities[city]
+            # Add small randomness around the exact city coordinates
+            spread = base_coords['spread']
+            lat_variation = np.random.uniform(-spread/2, spread/2)
+            lng_variation = np.random.uniform(-spread/2, spread/2)
+        else:
+            # Use country coordinates
+            base_coords = country_coords.get(country, country_coords['DE'])
+            # Add random variation based on country spread
+            spread = base_coords['spread']
+            lat_variation = np.random.uniform(-spread/2, spread/2)
+            lng_variation = np.random.uniform(-spread/2, spread/2)
         
         # Handle NaN customer numbers
         customer_num = row['customer_number']
@@ -237,7 +392,7 @@ def save_data_for_map(data, filename='customers_for_map.json'):
             'active_customers': sum(1 for c in data if c['is_active']),
             'inactive_customers': sum(1 for c in data if not c['is_active']),
             'generated_at': datetime.now().isoformat(),
-            'note': 'This is sample data with mock coordinates for demonstration purposes. For production use, replace with real geocoding.'
+            'note': 'This data includes ALL customers with mock coordinates for demonstration purposes. German cities have accurate coordinates. For production use, replace with real geocoding.'
         },
         'customers': data
     }
@@ -274,8 +429,8 @@ def main():
     # Clean and standardize the data
     df = clean_and_standardize_data()
     
-    # Create improved geocoded data
-    sample_data = create_improved_geocoded_data(df, sample_size=300)
+    # Create improved geocoded data for ALL customers
+    sample_data = create_improved_geocoded_data(df, sample_size=len(df))
     
     # Save data for the map
     map_data = save_data_for_map(sample_data)
@@ -285,7 +440,7 @@ def main():
     
     print("\n=== Processing Complete ===")
     print(f"Total customers processed: {len(df)}")
-    print(f"Sample data created: {len(sample_data)}")
+    print(f"All customers processed: {len(sample_data)}")
     print(f"Active customers in sample: {map_data['metadata']['active_customers']}")
     print(f"Inactive customers in sample: {map_data['metadata']['inactive_customers']}")
     
