@@ -1,0 +1,37 @@
+{
+    "google_maps_api_key": "YOUR_GOOGLE_MAPS_API_KEY_HERE",
+    "geocoding_services": {
+        "nominatim": {
+            "enabled": true,
+            "user_agent": "aboutwater_customers_v2",
+            "timeout": 10,
+            "max_retries": 3
+        },
+        "arcgis": {
+            "enabled": true,
+            "user_agent": "aboutwater_customers_v2",
+            "timeout": 10,
+            "max_retries": 3
+        },
+        "google": {
+            "enabled": false,
+            "api_key": "YOUR_GOOGLE_GEOCODING_API_KEY_HERE",
+            "timeout": 10,
+            "max_retries": 3
+        }
+    },
+    "map_settings": {
+        "default_center": {
+            "lat": 50.0,
+            "lng": 10.0
+        },
+        "default_zoom": 5,
+        "max_zoom": 18,
+        "min_zoom": 3
+    },
+    "data_processing": {
+        "batch_size": 100,
+        "delay_between_requests": 1.0,
+        "max_concurrent_requests": 5
+    }
+}
